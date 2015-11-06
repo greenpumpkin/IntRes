@@ -3,7 +3,7 @@ import java.net.*;
 
 public class TCPClient {
 	private Socket clientSocket;
-	public static final byte[] SERVERIP = new byte[] {10, (byte) 212, (byte) 212, (byte) 195};
+	public static final byte[] SERVERIP = new byte[] {10, (byte) 212, (byte) 112, (byte) 195};
 
 	public TCPClient() {
 		String sentence, modifiedSentence;

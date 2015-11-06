@@ -15,7 +15,13 @@ public class TCPServeur {
 
 	private HashMap<String, ArrayList<String>> liste;
 	private String dataFile;
+	private static final int PORT = 1903;
 
+	/**
+	 * Constructeur
+	 * 
+	 * @param data
+	 */
 	public TCPServeur(String data) {
 
 		String nom = "";
@@ -47,6 +53,12 @@ public class TCPServeur {
 		}
 	}
 
+	/**
+	 * Requête permettant de récupérer tous les noms et surnoms des personnes
+	 * enregistrées dans le serveur
+	 * 
+	 * @return String : -nom: surnom ; surnom ;… -nom: surnom ; surnom ;…
+	 */
 	public String getListe() {
 
 		/* Chaîne de caractères à retourner */
@@ -67,6 +79,16 @@ public class TCPServeur {
 		return result;
 	}
 
+	/**
+	 * Requête permettant d'ajouter un nouveau nom avec les surnoms passés en
+	 * paramètre. Si le nom existe déjà, les surnoms sont ajoutés à la liste des
+	 * surnoms pour cette personne.
+	 * 
+	 * @param nom
+	 * @param surnoms
+	 * @return String : "1" si un nouveau a été créé, "2" si le nom existait
+	 *         déjà et a reçu les nouveaux surnoms
+	 */
 	public String setNom(String nom, ArrayList<String> surnoms) {
 
 		/*
@@ -85,12 +107,15 @@ public class TCPServeur {
 		}
 	}
 
+	/**
+	 * Méthode permettant de traiter la requête envoyée par le client
+	 */
 	public void serveur() {
 		String reqClient;
 		String capitalizedSentence;
 		ServerSocket welcomeSocket;
 		try {
-			welcomeSocket = new ServerSocket(1903);
+			welcomeSocket = new ServerSocket(this.PORT);
 			while (true) {
 				Socket connectionSocket = welcomeSocket.accept();
 				BufferedReader inFromClient = new BufferedReader(
@@ -103,7 +128,6 @@ public class TCPServeur {
 				outToClient.writeBytes(capitalizedSentence);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
