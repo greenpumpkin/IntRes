@@ -15,6 +15,11 @@ public class TCPClient {
 		}
 	}
 	
+	/**
+	 * Envoie n'importe quelle requette passée en parametre au serveur
+	 * @param request
+	 * @return la réponse sur serveur
+	 */
 	public String sendRequest(String request){
 		String answer="";
 		try { 
@@ -36,8 +41,13 @@ public class TCPClient {
 		return answer;
 	}
 
+	/**
+	 * Envoie une requete GetList au serveur
+	 * @return la liste des tous les noms avec leurs surnoms 
+	 */
 	public HashMap<String,ArrayList<String>> sendGetListRequest(){
 		String listeString=sendRequest("(getList)");
+		//listeString du type "-nom: surnom; surnom; -nom:..."
 		String[] tab= listeString.split("-");
 		HashMap<String,ArrayList<String>> res= new HashMap<>();
 		for (int i=1; i<tab.length; i++){
@@ -52,14 +62,20 @@ public class TCPClient {
 		return res;
 	}
 	
-	public int sendSetRequest(String nom, ArrayList<String> surnoms){
-		//(setNom)nom : surnom ; surnom ; …
+	/**
+	 * Envoie une requete setNom au serveur
+	 * @param nom de la liste à mettre à jour (ou créer s'il n'existe pas)
+	 * @param surnoms à ajouter à nom
+	 * @return 1 si nom n'existait pas et a été créé avec ses surnoms et 2
+	 *  s'il existait et que le serveur lui a simplement ajouté ses surnoms 
+	 */
+	public int sendSetNomRequest(String nom, ArrayList<String> surnoms){
 		String requete="(setNom)"+nom+":";
 		for (String s: surnoms){
 			requete+=s+";";
 		}
+		//requete du type (setNom)nom : surnom ; surnom ; …
 		String res=sendRequest(requete);
-		System.out.println(res);
 		return Integer.valueOf(res);
 	}
 	
@@ -67,8 +83,7 @@ public class TCPClient {
 		byte[] serveurIP = new byte[] {10, (byte) 212, (byte) 123, (byte) 224};
 		TCPClient client = new TCPClient(serveurIP, 1903);
 		ArrayList<String> s= new ArrayList<>();
-		s.add("titi");
-		client.sendSetRequest("kolossal", s);
-		System.out.println("send getlist");
+		s.add("jojo");
+		client.sendSetNomRequest("Johana", s);
 	}
 }
