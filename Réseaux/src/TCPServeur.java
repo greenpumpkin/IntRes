@@ -108,12 +108,13 @@ public class TCPServeur {
 	}
 
 	/**
-	 * Méthode permettant de traiter la requête envoyée par le client
+	 * Méthode permettant de traiter une requête envoyée par le client
 	 */
 	public void serveur() {
+
 		String reqClient;
-		String capitalizedSentence;
 		ServerSocket welcomeSocket;
+
 		try {
 			welcomeSocket = new ServerSocket(this.PORT);
 			while (true) {
@@ -124,12 +125,29 @@ public class TCPServeur {
 						connectionSocket.getOutputStream());
 				reqClient = inFromClient.readLine();
 				System.out.println("Received: " + reqClient);
-				capitalizedSentence = reqClient.toUpperCase() + '\n';
-				outToClient.writeBytes(capitalizedSentence);
+
+				if (reqClient.contains("getList")) {
+					outToClient.writeBytes(this.getListe());
+				}
+
+				else if (reqClient.contains("setNom")) {
+
+					String[] result = reqClient.split(":");
+					String nom = result[0].replace("(setNom", "");
+					ArrayList<String> surnoms = new ArrayList<String>();
+					String[] tabSurnoms = result[1].split(";");
+					for (String s : tabSurnoms) {
+						surnoms.add(s);
+					}
+					outToClient.writeBytes(this.setNom(nom, surnoms));
+				}
+				connectionSocket.close();
 			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	public static void main(String args[]) {
