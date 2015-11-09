@@ -57,7 +57,7 @@ public class TCPServeur {
 	 * Requête permettant de récupérer tous les noms et surnoms des personnes
 	 * enregistrées dans le serveur
 	 * 
-	 * @return String : -nom: surnom ; surnom ;… -nom: surnom ; surnom ;…
+	 * @return String : -nom: surnom ; surnom ;… -nom: surnom ; surnom ;…
 	 */
 	public String getListe() {
 
@@ -79,6 +79,51 @@ public class TCPServeur {
 		return result;
 	}
 
+	/**
+	 * Requête permettant de récupérer tous les surnoms des personnes
+	 * enregistrées dans le serveur
+	 * 
+	 * @return String : surnom; surnom; surnom;...
+	 */
+	public String getListeSurnoms() {
+
+		/* Chaîne de caractères à retourner */
+		String result = "";
+
+		for (Entry<String, ArrayList<String>> entry : liste.entrySet()) {
+			ArrayList<String> valeur = entry.getValue();
+
+			/* Stockage des surnoms dans result */
+			for (String surnom : valeur) {
+				result += surnom + " ; ";
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Requête permettant de récupérer tous les noms des personnes enregistrées
+	 * dans le serveur.
+	 * 
+	 * @return String contenant les noms enregistrés dans le serveur.
+	 */
+	public String getListeNoms() {
+
+		/* Chaîne de caractères à retourner */
+		String result = "";
+
+		for (Entry<String, ArrayList<String>> entry : liste.entrySet()) {
+			String cle = entry.getKey();
+			ArrayList<String> valeur = entry.getValue();
+
+			result += "[ " + cle + " ;";
+		}
+
+		result += " ]";
+		return result;
+	}
+	
+	
 	/**
 	 * Requête permettant d'ajouter un nouveau nom avec les surnoms passés en
 	 * paramètre. Si le nom existe déjà, les surnoms sont ajoutés à la liste des
@@ -126,11 +171,24 @@ public class TCPServeur {
 				reqClient = inFromClient.readLine();
 				System.out.println("Received: " + reqClient);
 
-				if (reqClient.contains("getList")) {
+				if (reqClient.contains("(getList)")) {
 					outToClient.writeBytes(this.getListe());
 				}
+				
+				else if (reqClient.contains("(getListeSurnoms)")) {
+					outToClient.writeBytes(this.getListeSurnoms());
+				}
+				
+				else if (reqClient.contains("(getListeNoms)")) {
+					outToClient.writeBytes(this.getListeNoms());
+				}
 
-				else if (reqClient.contains("setNom")) {
+				else if (reqClient.contains("(setNom)")) {
+
+					if (!reqClient.contains(";") || !reqClient.contains(":")) {
+						outToClient.writeBytes("#SYNTAX ERROR#");
+						break;
+					}
 
 					String[] result = reqClient.split(":");
 					String nom = result[0].replace("(setNom", "");
@@ -140,6 +198,10 @@ public class TCPServeur {
 						surnoms.add(s);
 					}
 					outToClient.writeBytes(this.setNom(nom, surnoms));
+				}
+
+				else {
+					outToClient.writeBytes("#SYNTAX ERROR#");
 				}
 				connectionSocket.close();
 			}
