@@ -86,6 +86,7 @@ public class TCPClient {
 	 */
 	public ArrayList<String> sendGetListeNomsRequest() {
 		String listeString = sendRequest("(getListeNoms)");
+		//listeString du type "nom; nom;"
 		ArrayList<String> noms = new ArrayList<>();
 		String[] names = listeString.split(";");
 	
